@@ -402,7 +402,9 @@ if not meson.is_cross_build()
   if get_option('tests')
     subdir('tests')
   endif
-  subdir('thumbnailer')
+  if get_option('thumbnailer')
+    subdir('thumbnailer')
+  endif
 endif
 
 # Documentation
