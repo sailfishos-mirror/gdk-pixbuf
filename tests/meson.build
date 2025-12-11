@@ -85,6 +85,7 @@ installed_tests = {
   },
   'pixbuf-dpi': {
     'suites': ['io'],
+    'skip': enabled_loaders.contains('glycin'),
   },
   'pixbuf-pixdata': {
     'suites': ['format'],
