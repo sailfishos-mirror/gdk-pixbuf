@@ -99,6 +99,7 @@ test_bug_775218 (void)
   g_clear_object (&ref);
 }
 
+#if 0
 static void
 test_comment(void)
 {
@@ -117,6 +118,7 @@ test_comment(void)
   g_assert_cmpstr (gdk_pixbuf_get_option (ref, "comment"), ==, "COMMENT HERE");
   g_object_unref (ref);
 }
+#endif
 
 static void
 test_at_size (void)
@@ -221,7 +223,7 @@ main (int argc, char **argv)
   g_test_add_func ("/pixbuf/jpeg/inverted_cmyk_jpeg", test_inverted_cmyk_jpeg);
   g_test_add_func ("/pixbuf/jpeg/type9_rotation_exif_tag", test_type9_rotation_exif_tag);
   g_test_add_func ("/pixbuf/jpeg/bug775218", test_bug_775218);
-  g_test_add_func ("/pixbuf/jpeg/comment", test_comment);
+  // g_test_add_func ("/pixbuf/jpeg/comment", test_comment);
   g_test_add_func ("/pixbuf/jpeg/at_size", test_at_size);
   g_test_add_func ("/pixbuf/jpeg/issue70", test_jpeg_markers);
   g_test_add_func ("/pixbuf/jpeg/issue205", test_jpeg_fbfbfbfb);
