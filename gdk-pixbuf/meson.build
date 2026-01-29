@@ -234,6 +234,7 @@ if enabled_loaders.contains('glycin')
     'tga',
     'tiff',
     'webp',
+    'xbm',
     'xpm',
   ]
   glycin_base_loader_sources = [ 'io-glycin-utils.c' ]
