@@ -725,6 +725,7 @@ static void OneLine8(struct ico_progressive_state *context)
 	gint X;
 	guchar *Pixels;
 	gsize rowstride = gdk_pixbuf_get_rowstride (context->pixbuf);
+	gint palette_size = (context->HeaderSize - INFOHEADER_SIZE - context->DIBoffset) / 4;
 
 	X = 0;
 	if (context->Header.Negative == 0)
@@ -734,13 +735,17 @@ static void OneLine8(struct ico_progressive_state *context)
 		Pixels = (gdk_pixbuf_get_pixels (context->pixbuf) +
 			  rowstride * context->Lines);
 	while (X < context->Header.width) {
+		guint8 idx = context->LineBuf[X];
+		if (idx >= palette_size)
+			idx = 0;
+
 		/* The joys of having a BGR byteorder */
 		Pixels[X * 4 + 0] =
-		    context->HeaderBuf[4 * context->LineBuf[X] + INFOHEADER_SIZE + 2 + context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 2 + context->DIBoffset];
 		Pixels[X * 4 + 1] =
-		    context->HeaderBuf[4 * context->LineBuf[X] + INFOHEADER_SIZE + 1 +context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 1 +context->DIBoffset];
 		Pixels[X * 4 + 2] =
-		    context->HeaderBuf[4 * context->LineBuf[X] + INFOHEADER_SIZE +context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE +context->DIBoffset];
 		Pixels[X * 4 + 3] = 0xff;
 		X++;
 	}
@@ -750,6 +755,7 @@ static void OneLine4(struct ico_progressive_state *context)
 	gint X;
 	guchar *Pixels;
 	gsize rowstride = gdk_pixbuf_get_rowstride (context->pixbuf);
+	gint palette_size = (context->HeaderSize - INFOHEADER_SIZE - context->DIBoffset) / 4;
 
 	X = 0;
 	if (context->Header.Negative == 0)
@@ -761,25 +767,32 @@ static void OneLine4(struct ico_progressive_state *context)
 	
 	while (X < context->Header.width) {
 		guchar Pix;
+		guint8 idx;
 		
 		Pix = context->LineBuf[X/2];
+		idx = Pix >> 4;
+		if (idx >= palette_size)
+			idx = 0;
 
 		Pixels[X * 4 + 0] =
-		    context->HeaderBuf[4 * (Pix>>4) + INFOHEADER_SIZE + 2 + context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 2 + context->DIBoffset];
 		Pixels[X * 4 + 1] =
-		    context->HeaderBuf[4 * (Pix>>4) + INFOHEADER_SIZE + 1 +context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 1 +context->DIBoffset];
 		Pixels[X * 4 + 2] =
-		    context->HeaderBuf[4 * (Pix>>4) + INFOHEADER_SIZE + context->DIBoffset];
+		    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + context->DIBoffset];
 		Pixels[X * 4 + 3] = 0xff;
 		X++;
-		if (X<context->Header.width) { 
+		if (X<context->Header.width) {
 			/* Handle the other 4 bit pixel only when there is one */
+			idx = Pix & 15;
+			if (idx >= palette_size)
+				idx = 0;
 			Pixels[X * 4 + 0] =
-			    context->HeaderBuf[4 * (Pix&15) + INFOHEADER_SIZE + 2 + context->DIBoffset];
+			    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 2 + context->DIBoffset];
 			Pixels[X * 4 + 1] =
-			    context->HeaderBuf[4 * (Pix&15) + INFOHEADER_SIZE + 1 + context->DIBoffset];
+			    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + 1 + context->DIBoffset];
 			Pixels[X * 4 + 2] =
-			    context->HeaderBuf[4 * (Pix&15) + INFOHEADER_SIZE + context->DIBoffset];
+			    context->HeaderBuf[4 * idx + INFOHEADER_SIZE + context->DIBoffset];
 			Pixels[X * 4 + 3] = 0xff;
 			X++;
 		}
